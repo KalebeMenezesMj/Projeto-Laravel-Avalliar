@@ -1,4 +1,5 @@
 # Sistema de Gestão de Demandas - Avalliar Engenharia
+Este projeto foi desenvolvido para uma empresa real, na qual atualmente trabalho. As funcionalidades foram personalizadas e adaptadas de acordo com as necessidades específicas da organização, substituindo, por exemplo, a gestão de produtos por demandas, entre outras adequações relevantes.
 
 Este é um sistema web desenvolvido em Laravel para a gestão de demandas de avaliações periciais de imóveis. A aplicação permite o cadastro de usuários, autenticação, e um painel de controle para criar, visualizar, editar e excluir demandas de avaliação.
 
