@@ -4,7 +4,6 @@
 @section('conteudo')
 
 <style>
-    /* Estilos para o Dashboard */
     :root {
         --cor-primaria: #2563eb;
         --cor-texto-principal: #1f2937;
@@ -19,7 +18,6 @@
         padding: 30px 20px;
     }
 
-    /* Cabeçalho do Dashboard */
     .dashboard-header {
         display: flex;
         justify-content: space-between;
@@ -45,12 +43,12 @@
         border-radius: 8px;
         font-weight: 600;
         transition: background-color 0.2s ease;
+        display: inline-block; 
     }
     .action-buttons a:hover {
         background-color: #1d4ed8;
     }
 
-    /* Cartões de Estatísticas */
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -76,7 +74,6 @@
         margin: 0;
     }
 
-    /* Tabela de Atividades Recentes */
     .recent-activity h2 {
         font-size: 1.5rem;
         color: var(--cor-texto-principal);
@@ -96,6 +93,7 @@
         padding: 15px;
         text-align: left;
         border-bottom: 1px solid var(--cor-borda);
+        white-space: nowrap; 
     }
     .activity-table thead {
         background-color: #f9fafb;
@@ -107,7 +105,6 @@
         letter-spacing: 0.5px;
     }
 
-    /* Badge de Status (reutilizado de antes) */
     .status-badge {
         display: inline-block;
         padding: 4px 10px;
@@ -124,6 +121,35 @@
     .status-finalizada { background-color: #16a34a; }
     .status-cancelada { background-color: #ef4444; }
 
+
+    .table-responsive-wrapper {
+        overflow-x: auto; 
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--cor-borda);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column; 
+            align-items: flex-start; 
+        }
+        .action-buttons {
+            width: 100%;
+        }
+        .action-buttons a {
+            display: block; 
+            text-align: center;
+        }
+        .activity-table {
+            box-shadow: none; 
+            border-radius: 0;
+            border: none;
+        }
+    }
+
 </style>
 
 <div class="dashboard-container">
@@ -133,59 +159,62 @@
             <p class="welcome-text">Bem-vindo(a) de volta, <strong>{{ session('usuario_nome') }}</strong>!</p>
         </div>
         <div class="action-buttons">
-            <a href="/frmproduto">Cadastrar Nova Demanda</a>
+            <a href="/frmdemanda">Cadastrar Nova Demanda</a>
         </div>
     </header>
 
     <section class="stats-grid">
         <div class="stat-card">
-            <p class="stat-value">{{ $totalDemandas }}</p>
+            <p class="stat-value">{{ $totalDemandas ?? '0' }}</p>
             <p class="stat-label">Total de Demandas</p>
         </div>
         <div class="stat-card">
-            <p class="stat-value">{{ $demandasPendentes }}</p>
+            <p class="stat-value">{{ $demandasPendentes ?? '0' }}</p>
             <p class="stat-label">Demandas Pendentes</p>
         </div>
         <div class="stat-card">
-            <p class="stat-value">{{ $totalUsuarios }}</p>
+            <p class="stat-value">{{ $totalUsuarios ?? '0' }}</p>
             <p class="stat-label">Usuários Cadastrados</p>
         </div>
     </section>
 
     <section class="recent-activity">
         <h2>Últimas Demandas Cadastradas</h2>
-        <table class="activity-table">
-            <thead>
-                <tr>
-                    <th>Cliente</th>
-                    <th>Status</th>
-                    <th>Engenheiro</th>
-                    <th>Data Abertura</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse ($ultimasDemandas as $demanda)
+        
+        <div class="table-responsive-wrapper">
+            <table class="activity-table">
+                <thead>
                     <tr>
-                        <td><strong>{{ $demanda->nome_cliente }}</strong><br><small style="color: #6b7280;">{{ $demanda->empresa_contratante }}</small></td>
-                        <td>
-                            <span class="status-badge status-{{ strtolower(str_replace(' ', '-', $demanda->status)) }}">
-                                {{ $demanda->status }}
-                            </span>
-                        </td>
-                        <td>{{ $demanda->engenheiro_responsavel }}</td>
-                        <td>{{ \Carbon\Carbon::parse($demanda->data_abertura)->format('d/m/Y') }}</td>
-                        <td>
-                            <a href="#" style="color: var(--cor-primaria); font-weight: 600;">Ver</a>
-                        </td>
+                        <th>Cliente</th>
+                        <th>Status</th>
+                        <th>Engenheiro</th>
+                        <th>Data Abertura</th>
+                        <th>Ações</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding: 30px;">Nenhuma demanda encontrada.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @forelse ($ultimasDemandas as $demanda)
+                        <tr>
+                            <td><strong>{{ $demanda->nome_cliente }}</strong><br><small style="color: #6b7280;">{{ $demanda->empresa_contratante }}</small></td>
+                            <td>
+                                <span class="status-badge status-{{ strtolower(str_replace(' ', '-', $demanda->status)) }}">
+                                    {{ $demanda->status }}
+                                </span>
+                            </td>
+                            <td>{{ $demanda->engenheiro_responsavel }}</td>
+                            <td>{{ \Carbon\Carbon::parse($demanda->data_abertura)->format('d/m/Y') }}</td>
+                            <td>
+                                <a href="/frmeditdemanda/{{ $demanda->id }}" style="color: var(--cor-primaria); font-weight: 600;">Ver/Editar</a>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 30px;">Nenhuma demanda encontrada.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </section>
 
 </div>
